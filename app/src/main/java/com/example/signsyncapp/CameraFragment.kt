@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -14,6 +15,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.signsyncapp.databinding.CameraFragmentBinding
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -37,6 +39,7 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         cameraExecutor = Executors.newSingleThreadExecutor()
 
+
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
             startCamera()
@@ -51,7 +54,7 @@ class CameraFragment : Fragment() {
 
         binding.flipCameraButton.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
 
-        val btnstop = view.findViewById<ImageView>(R.id.stop)
+        val btnstop = view.findViewById<Button>(R.id.summarize_video)
 
         // Set click listener to navigate to Starting_page activity
         btnstop.setOnClickListener {
