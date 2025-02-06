@@ -20,7 +20,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Find profile ImageView
-        val profileImage = view.findViewById<ImageView>(R.id.profile)
+        val profileImage = view.findViewById<ImageView>(R.id.Sign_out)
 
         // Set click listener to navigate to Starting_page activity
         profileImage.setOnClickListener {

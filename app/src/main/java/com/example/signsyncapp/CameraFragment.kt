@@ -8,14 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.signsyncapp.databinding.CameraFragmentBinding
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -47,7 +45,6 @@ class CameraFragment : Fragment() {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
 
-        // Flip Camera Button Click Listener
         binding.flipCameraButton.setOnClickListener {
             toggleCamera()
         }
@@ -112,8 +109,8 @@ class CameraFragment : Fragment() {
 
     private fun stopCamera() {
         try {
-            cameraProvider?.unbindAll() // Unbind all use cases
-            cameraExecutor.shutdown() // Shut down camera thread executor
+            cameraProvider?.unbindAll()
+            cameraExecutor.shutdown()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -121,7 +118,7 @@ class CameraFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        stopCamera() // Ensure the camera stops when fragment is destroyed
+        stopCamera()
         _binding = null
     }
 }
