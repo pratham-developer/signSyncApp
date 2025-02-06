@@ -20,6 +20,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -29,6 +30,10 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import retrofit2.HttpException
+import java.io.IOException
 
 
 class Starting_page : AppCompatActivity() {
@@ -101,7 +106,7 @@ class Starting_page : AppCompatActivity() {
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
             auth.signInWithCredential(credential).addOnCompleteListener {
                 if (it.isSuccessful) {
-                    startHomeActivity(account.email, account.displayName)
+                    login()
                 }
             }
         } catch (e: Exception) {
@@ -119,6 +124,43 @@ class Starting_page : AppCompatActivity() {
             finish()
         } catch (e: Exception) {
             Log.e("mainactivity", "exception: ", e)
+        }
+    }
+
+    private suspend fun getFirebaseIdToken(): String? {
+        return try {
+            val user = auth.currentUser
+            user?.getIdToken(false)?.await()?.token
+        } catch (e: Exception) {
+            Log.e("HomeActivity", "Error getting Firebase ID token", e)
+            null
+        }
+    }
+
+    private suspend fun loginHelper(authToken: String) {
+        try {
+            val response = RetrofitInstance.api.loginToBackend(authToken)
+            if (response.isSuccessful && response.body() != null) {
+                startHomeActivity(response.body()!!.user?.email, response.body()!!.user?.name)
+                Toast.makeText(this,"successfull",Toast.LENGTH_SHORT).show()
+            } else {
+                Log.e("HomeActivity", "Response not successful: ${response.code()} - ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("HomeActivity", "IOException, you might not have internet connection", e)
+        } catch (e: HttpException) {
+            Log.e("HomeActivity", "HttpException, unexpected response", e)
+        }
+    }
+
+    private fun login() {
+        lifecycleScope.launch {
+            val token = getFirebaseIdToken()
+            if (token != null) {
+                loginHelper("Bearer $token")
+            } else {
+                Log.e("HomeActivity", "Failed to get Firebase ID token")
+            }
         }
     }
 }
